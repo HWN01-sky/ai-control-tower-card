@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="en-GB" dir="ltr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="color-scheme" content="light dark">
+<title>AI Control Tower Assistant</title>
+<style>
+  :root {
+    --bg: #ffffff;
+    --ink: #1b1b3a;
+    --ink-soft: #5c5f7a;
+    --brand: #2b2f8f;
+    --brand-deep: #1d2168;
+    --accent: #6b2fb3;
+    --brand-ink: #ffffff;
+    --bot-bubble: #eef0fb;
+    --tile-bg: #f7f8fe;
+    --tile-bg-hover: #eef0fb;
+    --border: #e4e6f4;
+    --radius: 16px;
+  }
+
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --bg: #11131f;
+      --ink: #eef0fb;
+      --ink-soft: #aab0cc;
+      --brand: #5660d6;
+      --brand-deep: #3a40a8;
+      --accent: #9b6be0;
+      --bot-bubble: #1c2034;
+      --tile-bg: #181c2c;
+      --tile-bg-hover: #222742;
+      --border: #2a2f45;
+    }
+  }
+
+  * { box-sizing: border-box; }
+  html, body { margin: 0; height: 100%; }
+
+  body {
+    font-family: "Segoe UI", system-ui, -apple-system, Roboto, Arial, sans-serif;
+    background: var(--bg);
+    color: var(--ink);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 16px;
+  }
+
+  .card {
+    width: 100%;
+    max-width: 600px;
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    overflow: hidden;
+    box-shadow: 0 12px 38px rgba(27, 27, 58, 0.12);
+    background: var(--bg);
+  }
+
+  .head {
+    background: linear-gradient(135deg, var(--brand), var(--accent));
+    color: #fff;
+    padding: 20px 22px;
+    display: flex;
+    align-items: center;
+    gap: 14px;
+  }
+  .avatar {
+    width: 46px; height: 46px; border-radius: 50%;
+    background: rgba(255,255,255,0.18);
+    display: grid; place-items: center; flex: 0 0 auto;
+  }
+  .avatar svg { width: 25px; height: 25px; }
+  .head .name { font-weight: 700; font-size: 1.1rem; line-height: 1.2; }
+  .head .status { font-size: 0.78rem; opacity: 0.9; display: flex; align-items: center; gap: 6px; margin-top: 3px; }
+  .dot { width: 8px; height: 8px; border-radius: 50%; background: #46e08a; display: inline-block; }
+
+  .body { padding: 20px 22px 22px; }
+
+  .msg {
+    background: var(--bot-bubble);
+    color: var(--ink);
+    padding: 12px 15px;
+    border-radius: 14px;
+    border-end-start-radius: 4px;
+    font-size: 0.95rem;
+    line-height: 1.55;
+    margin-bottom: 16px;
+    max-width: 96%;
+  }
+
+  .prompt-label {
+    font-size: 0.72rem;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    font-weight: 700;
+    color: var(--ink-soft);
+    margin: 4px 0 10px;
+  }
+
+  .tiles {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+  }
+  @media (max-width: 420px) { .tiles { grid-template-columns: 1fr; } }
+
+  .tile {
+    display: flex;
+    align-items: center;
+    gap: 11px;
+    text-decoration: none;
+    color: var(--ink);
+    background: var(--tile-bg);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 13px 14px;
+    font-size: 0.9rem;
+    font-weight: 600;
+    line-height: 1.3;
+    transition: background 0.15s ease, transform 0.15s ease, border-color 0.15s ease;
+  }
+  .tile:hover {
+    background: var(--tile-bg-hover);
+    transform: translateY(-2px);
+    border-color: var(--accent);
+  }
+  .tile:focus-visible { outline: 3px solid var(--accent); outline-offset: 2px; }
+  .tile .ico {
+    width: 34px; height: 34px; border-radius: 9px;
+    background: var(--brand);
+    color: #fff;
+    display: grid; place-items: center; flex: 0 0 auto;
+  }
+  .tile .ico svg { width: 18px; height: 18px; }
+
+  .cta {
+    display: block;
+    text-align: center;
+    text-decoration: none;
+    background: var(--brand);
+    color: var(--brand-ink);
+    font-weight: 700;
+    font-size: 1rem;
+    padding: 15px 18px;
+    border-radius: 12px;
+    margin-top: 18px;
+    transition: background 0.15s ease, transform 0.15s ease;
+  }
+  .cta:hover { background: var(--brand-deep); transform: translateY(-1px); }
+  .cta:focus-visible { outline: 3px solid var(--accent); outline-offset: 2px; }
+
+  .foot {
+    text-align: center;
+    font-size: 0.76rem;
+    color: var(--ink-soft);
+    padding: 0 22px 18px;
+  }
+</style>
+</head>
+<body>
+  <div class="card">
+    <div class="head">
+      <span class="avatar" aria-hidden="true">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+      </span>
+      <div>
+        <div class="name">AI Control Tower Assistant</div>
+        <div class="status"><span class="dot" aria-hidden="true"></span> Microsoft 365 Copilot</div>
+      </div>
+    </div>
+    <div class="body">
+      <div class="msg">👋 Hi! I'm the AI Control Tower Assistant. Pick a starting point below, or open a full chat — I'll launch in a secure Microsoft&nbsp;365 window.</div>
+
+      <p class="prompt-label">Popular starting points</p>
+      <div class="tiles">
+        <a class="tile" href="https://m365.cloud.microsoft/chat/?titleId=T_e95fe6ed-726d-096f-9be1-aa2fbb408718&amp;source=embedded-builder" target="_blank" rel="noopener">
+          <span class="ico" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14M5 12h14"/></svg></span>
+          Submit an AI use case
+        </a>
+        <a class="tile" href="https://m365.cloud.microsoft/chat/?titleId=T_e95fe6ed-726d-096f-9be1-aa2fbb408718&amp;source=embedded-builder" target="_blank" rel="noopener">
+          <span class="ico" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg></span>
+          Find a playbook
+        </a>
+        <a class="tile" href="https://m365.cloud.microsoft/chat/?titleId=T_e95fe6ed-726d-096f-9be1-aa2fbb408718&amp;source=embedded-builder" target="_blank" rel="noopener">
+          <span class="ico" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="23 7 16 12 23 17 23 7"/><rect x="1" y="5" width="15" height="14" rx="2" ry="2"/></svg></span>
+          Watch a tutorial
+        </a>
+        <a class="tile" href="https://m365.cloud.microsoft/chat/?titleId=T_e95fe6ed-726d-096f-9be1-aa2fbb408718&amp;source=embedded-builder" target="_blank" rel="noopener">
+          <span class="ico" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg></span>
+          Browse the FAQs
+        </a>
+      </div>
+
+      <a class="cta" href="https://m365.cloud.microsoft/chat/?titleId=T_e95fe6ed-726d-096f-9be1-aa2fbb408718&amp;source=embedded-builder" target="_blank" rel="noopener">Open a full chat →</a>
+    </div>
+    <div class="foot">Opens securely in Microsoft&nbsp;365 · Sky sign-in required</div>
+  </div>
+</body>
+</html>
